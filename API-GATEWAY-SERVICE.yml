@@ -1,0 +1,44 @@
+server:
+    port: 8881
+
+
+spring:
+    cloud:
+        gateway:
+            default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+            globalcors:
+              corsConfigurations:
+                '[/**]':
+                    allowedOrigins: "*"
+                    allowedMethods: "*"
+                    allowedHeaders: "*"
+            routes:
+            - id: UserDetails-Microservice
+              uri: lb://UserDetails-Microservice
+              predicates:
+              - Path= /users/**
+            - id: Book-service
+              uri: lb://Book-service
+              predicates:
+              - Path= /books/**
+            - id: Whislist-service
+              uri: lb://Whislist-service
+              predicates:
+              - Path= /fav/**
+            - id: Authorization
+              uri: lb://Authorization
+              predicates:
+              - Path= /auth/**
+            
+    application:
+        name: API-GATEWAY-SERVICE          
+
+eureka:
+    client:
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+    instance:
+        hostname: localhost
